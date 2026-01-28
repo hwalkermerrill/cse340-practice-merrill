@@ -1,20 +1,26 @@
 {
-  "name": "cse340-web-backend",
+  "name": "cse340-practice-merrill",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon --env-file=.env server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.28.1",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.2.0",
+    "nodemon": "^3.1.11",
     "postcss": "^8.5.6",
     "postcss-nesting": "^14.0.0",
     "prettier": "^3.8.1",
