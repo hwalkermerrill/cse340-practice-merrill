@@ -1,0 +1,13 @@
+{
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit",
+		"source.fixAll.eslint": "explicit",
+		"source.fixAll.stylelint": "explicit"
+	},
+	"stylelint.validate": ["css", "scss", "less"],
+	"css.validate": false,
+	"[css]": { "editor.defaultFormatter": null },
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	}
+}
