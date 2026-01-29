@@ -10,14 +10,14 @@ export default defineConfig([
   },
   {
     files: ["**/*.{js,mjs,cjs}"],
-    languageOptions: { globals: globals.browser },
+    languageOptions: { globals: globals.node },
   },
   {
     rules: {
       "no-unused-vars": "warn",
       "no-undef": "warn",
       quotes: ["error", "double", { allowTemplateLiterals: true }],
-      "no-console": "warn",
+      // "no-console": "warn",
     },
   },
 ]);
