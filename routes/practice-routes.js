@@ -1,7 +1,7 @@
 //Constants on top
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000;
+// const PORT = process.env.PORT || 3000;
 const name = process.env.NAME || "NAME NOT SET";
 
 //Respond with hello (env name)
@@ -95,7 +95,7 @@ app.route("/book")
   })
 
 // error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   console.error(err.stack)
   res.status(500).send("Something broke!")
 })
