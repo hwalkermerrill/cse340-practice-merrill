@@ -1,0 +1,32 @@
+<!-- Copy of Sample -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Welcome</title>
+</head>
+
+<body>
+  <!-- Display the user's name, escaped for safety -->
+  <h1>Hello, <%= user.name %>!</h1>
+
+  <!-- Conditional logic to check if the user is logged in -->
+  <% if (user.isLoggedIn) { %>
+    <!-- Display the number of new messages -->
+    <p>You have <%= user.messages.length %> new messages.</p>
+    <% } else { %>
+      <!-- Message prompting the user to log in -->
+      <p>Please log in to see your messages.</p>
+      <% } %>
+
+        <!-- Loop through the user's messages and display each one in a list -->
+        <ul>
+          <% user.messages.forEach((msg)=> { %>
+            <li>
+              <%= msg %>
+            </li>
+            <% }); %>
+        </ul>
+</body>
+
+</html>
