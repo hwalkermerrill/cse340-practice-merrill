@@ -7,7 +7,5 @@
 	"stylelint.validate": ["css", "scss", "less"],
 	"css.validate": false,
 	"[css]": { "editor.defaultFormatter": null },
-	"[json]": {
-		"editor.defaultFormatter": "vscode.json-language-features"
-	}
+	"[json]": { "editor.defaultFormatter": "vscode.json-language-features" }
 }

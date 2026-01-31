@@ -1,16 +1,18 @@
-<!-- Source header and footer from ejs template -->
+<!-- Source from ejs templates -->
+<%- include("partials/head") %>
 <%- include("partials/header") %>
+<%- include("partials/nav") %>
 
-	<!-- MAIN CONTENT HERE -->
-	<main class="clearfix" id="maincontent">
-		<h1> Welcome Home, Sir!!!</h1>
-		<strong><i>&nbsp;“It’s a dangerous business, Frodo, going out your door. You step onto the road, and if you don’t
-				keep your feet, there’s no knowing where you might be swept off to.”</i></strong>
-		<p> This site is meant as a front-end landing page for my practice with and production for CSE340 Web Backend
-			Development at Brigham Young University - Idaho, as taught by Professor Shepherd. This page will likely be
-			developed over the course of the semester, and will ultimately serve as a demonstration portfolio for the skills I
-			learned over the course of the semester.
-		</p>
-	</main>
+<!-- MAIN CONTENT HERE -->
+<main class="clearfix" id="maincontent">
+	<h1> Welcome Home, Sir!!!</h1>
+	<strong><i>&nbsp;“It’s a dangerous business, Frodo, going out your door. You step onto the road, and if you don’t
+			keep your feet, there’s no knowing where you might be swept off to.”</i></strong>
+	<p> This site is meant as a front-end landing page for my practice with and production for CSE340 Web Backend
+		Development at Brigham Young University - Idaho, as taught by Professor Shepherd. This page will likely be
+		developed over the course of the semester, and will ultimately serve as a demonstration portfolio for the skills I
+		learned over the course of the semester.
+	</p>
+</main>
 
-	<%- include("partials/footer") %>
+<%- include("partials/footer") %>

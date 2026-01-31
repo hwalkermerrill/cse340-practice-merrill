@@ -1,33 +1,35 @@
-<!-- Source header and footer from ejs template -->
+<!-- Source from ejs templates -->
+<%- include("partials/head") %>
 <%- include("partials/header") %>
+<%- include("partials/nav") %>
 
-	<!-- MAIN CONTENT HERE -->
-	<main class="clearfix" id="maincontent">
-		<h1> Meet the Developer</h1>
-		<div class="floatswitch" onclick="viewHandler(event)">
-			<section>
-				<h3>Harrison Merrill</h3>
-				<picture>
-					<img class="pointer" src="/images/profile-pic.jpg" alt="Harrison Merrill" loading="lazy">
-				</picture>
-			</section>
-			<section>
-				<h3>Background</h3>
-				<p> My name is Harrison Merrill, and I am a Junior in Applied Technology, with an emphasis on web development,
-					Database Design, and Information Security. I have been working on or with computers with my dad in some
-					capacity since the windows 95 days, but have mostly just done things for fun or to troubleshoot a specific
-					problem; this did however help guide me into deciding to get a degree in technology. I took a 6-year hiatus
-					from school after my oldest child was born for several reasons, but now that he is in school himself, I
-					started coming back to BYU-I last year.</p>
-				<p> For my fun fact, I live in Japan, where I have lived for the last 8 years, and currently live in Okinawa
-					though I spent most of my time in Japan in the greater Tokyo area in Tachikawa. This is because my wife works
-					for the Air Force as a maintainer (mechanic) on C-130J's. For fun, when I find time that isn't dominated by
-					school, family, or community, I like to play games like board games, video games, and tabletop games, cook or
-					barbecue, and paint miniature figurines.</p>
-				<p> Web development has turned into the main focus of my degree program, and while I've done a lot with various
-					languages and front-end things, this will be my first back-end course. I'm hoping that by the end of this
-					semester, I will become a confident full-stack developer.</p>
-			</section>
-	</main>
+<!-- MAIN CONTENT HERE -->
+<main class="clearfix" id="maincontent">
+	<h1> Meet the Developer</h1>
+	<div class="floatswitch" onclick="viewHandler(event)">
+		<section>
+			<h3>Harrison Merrill</h3>
+			<picture>
+				<img class="pointer" src="/images/profile-pic.jpg" alt="Harrison Merrill" loading="lazy">
+			</picture>
+		</section>
+		<section>
+			<h3>Background</h3>
+			<p> My name is Harrison Merrill, and I am a Junior in Applied Technology, with an emphasis on web development,
+				Database Design, and Information Security. I have been working on or with computers with my dad in some
+				capacity since the windows 95 days, but have mostly just done things for fun or to troubleshoot a specific
+				problem; this did however help guide me into deciding to get a degree in technology. I took a 6-year hiatus
+				from school after my oldest child was born for several reasons, but now that he is in school himself, I
+				started coming back to BYU-I last year.</p>
+			<p> For my fun fact, I live in Japan, where I have lived for the last 8 years, and currently live in Okinawa
+				though I spent most of my time in Japan in the greater Tokyo area in Tachikawa. This is because my wife works
+				for the Air Force as a maintainer (mechanic) on C-130J's. For fun, when I find time that isn't dominated by
+				school, family, or community, I like to play games like board games, video games, and tabletop games, cook or
+				barbecue, and paint miniature figurines.</p>
+			<p> Web development has turned into the main focus of my degree program, and while I've done a lot with various
+				languages and front-end things, this will be my first back-end course. I'm hoping that by the end of this
+				semester, I will become a confident full-stack developer.</p>
+		</section>
+</main>
 
-	<%- include("partials/footer") %>
+<%- include("partials/footer") %>
