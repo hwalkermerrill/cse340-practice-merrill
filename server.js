@@ -9,13 +9,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // const name = process.env.NAME || "NAME NOT SET";
 const PORT = process.env.PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || "production"; // eslint-disable-line no-unused-vars
+const NODE_ENV = process.env.NODE_ENV || "production";
 
 // Middleware (AKA Mise en Place)
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src/views"));
+
+app.use((req, res, next) => {
+	// Make NODE_ENV available to all templates
+	res.locals.NODE_ENV = NODE_ENV.toLowerCase() || "production";
+	next();
+});
 
 // Routes
 app.get("/", (req, res) => {
@@ -37,18 +43,25 @@ app.get("/products", (req, res) => {
 	});
 });
 
-// Render EJS template example (commented out)
-// // Define a route for the root URL ('/')
-// app.get("/", (req, res) => {
-// 	// Create a user object with some sample data
-// 	const user = {
-// 		name: "Alex",
-// 		isLoggedIn: true,
-// 		messages: ["Welcome!", "Do not forget to check your inbox."]
-// 	};
-// 	// Render the 'index' EJS template and pass the user object to it
-// 	res.render("index", { user });
-// });
+// When in development mode, start a WebSocket server for live reloading
+if (NODE_ENV.includes("dev")) {
+	const ws = await import("ws");
+
+	try {
+		const wsPort = parseInt(PORT) + 1;
+		const wsServer = new ws.WebSocketServer({ port: wsPort });
+
+		wsServer.on("listening", () => {
+			console.log(`WebSocket server is running on port ${wsPort}`);
+		});
+
+		wsServer.on("error", (error) => {
+			console.error("WebSocket server error:", error);
+		});
+	} catch (error) {
+		console.error("Failed to start WebSocket server:", error);
+	}
+}
 
 // Start the server and listen on the specified port
 app.listen(PORT, () => {
