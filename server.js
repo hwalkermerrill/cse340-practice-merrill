@@ -23,6 +23,26 @@ app.use((req, res, next) => {
 	next();
 });
 
+// Routes
+app.get("/", (req, res) => {
+	res.render("home", {
+		title: "Welcome Home",
+		activePage: "home"
+	});
+});
+app.get("/about", (req, res) => {
+	res.render("about", {
+		title: "About Me",
+		activePage: "about"
+	});
+});
+app.get("/products", (req, res) => {
+	res.render("products", {
+		title: "Our Products",
+		activePage: "products"
+	});
+});
+
 // Error Handling Middleware
 // Catch-all route for 404 errors
 app.use((req, res, next) => {
@@ -65,26 +85,6 @@ app.use((err, req, res, next) => {
 			res.status(status).send(`<h1>Error ${status}</h1><p>An error occurred.</p>`);
 		}
 	}
-});
-
-// Routes
-app.get("/", (req, res) => {
-	res.render("home", {
-		title: "Welcome Home",
-		activePage: "home"
-	});
-});
-app.get("/about", (req, res) => {
-	res.render("about", {
-		title: "About Me",
-		activePage: "about"
-	});
-});
-app.get("/products", (req, res) => {
-	res.render("products", {
-		title: "Our Products",
-		activePage: "products"
-	});
 });
 
 // When in development mode, start a WebSocket server for live reloading
