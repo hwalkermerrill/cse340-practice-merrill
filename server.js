@@ -79,6 +79,69 @@ app.get("/products", (req, res) => {
 		activePage: "products"
 	});
 });
+app.get("/catalog", (req, res) => {
+	res.render("catalog", {
+		title: "Course Catalog",
+		activePage: "catalog",
+		courses: courses
+	});
+});
+app.get("/catalog/random", (req, res, next) => {
+	const ids = Object.keys(courses);
+
+	// Validator
+	if (ids.length === 0) {
+		const err = new Error("No courses available");
+		err.status = 500;
+		return next(err);
+	}
+
+	let randomId = ids[Math.floor(Math.random() * ids.length)];
+	res.redirect(`/catalog/${randomId}`);
+});
+// Enhanced course detail route with sorting
+app.get("/catalog/:courseId", (req, res, next) => {
+	const courseId = req.params.courseId;
+	const validPattern = /^[A-Za-z]+[0-9]+$/;
+	const sortBy = req.query.sort || "time";
+	const course = courses[courseId];
+
+	// Validators
+	if (!validPattern.test(courseId)) {
+		const err = new Error(`Invalid course ID format: ${courseId}`);
+		err.status = 404;
+		return next(err);
+	} else if (!course) {
+		const err = new Error(`Course ${courseId} not found`);
+		err.status = 404;
+		return next(err);
+	}
+
+	let sortedSections = [...course.sections];
+
+	// Sort based on the parameter
+	switch (sortBy) {
+		case "professor":
+			sortedSections.sort((a, b) => a.professor.localeCompare(b.professor));
+			break;
+		case "room":
+			sortedSections.sort((a, b) => a.room.localeCompare(b.room));
+			break;
+		case "time":
+		default:
+			// Keep original time order as default
+			break;
+	}
+
+	console.log(`Viewing course: ${courseId}, sorted by: ${sortBy}`);
+
+	res.render("course-detail", {
+		title: `${course.id} - ${course.title}`,
+		activePage: "catalog",
+		course: { ...course, sections: sortedSections },
+		currentSort: sortBy
+	});
+});
 
 // Error Handling Middleware
 // Test route for 500 errors
