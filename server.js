@@ -7,7 +7,6 @@ import path from "path";
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// const name = process.env.NAME || "NAME NOT SET";
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV || "production";
 
@@ -127,12 +126,6 @@ app.get("/about", (req, res) => {
 		activePage: "about"
 	});
 });
-app.get("/products", (req, res) => {
-	res.render("products", {
-		title: "Our Products",
-		activePage: "products"
-	});
-});
 app.get("/catalog", (req, res) => {
 	res.render("catalog", {
 		title: "Course Catalog",
@@ -140,7 +133,15 @@ app.get("/catalog", (req, res) => {
 		courses: courses
 	});
 });
+app.get("/demo", addDemoHeaders, (req, res) => {
+	res.render("demo", {
+		title: "Middleware Demo Page",
+		activePage: "demo"
+	});
+});
+
 app.get("/catalog/random", (req, res, next) => {
+	// Select a random course ID
 	const ids = Object.keys(courses);
 
 	// Validator
@@ -153,6 +154,7 @@ app.get("/catalog/random", (req, res, next) => {
 	let randomId = ids[Math.floor(Math.random() * ids.length)];
 	res.redirect(`/catalog/${randomId}`);
 });
+
 // Enhanced course detail route with sorting
 app.get("/catalog/:courseId", (req, res, next) => {
 	const courseId = req.params.courseId;
@@ -194,12 +196,6 @@ app.get("/catalog/:courseId", (req, res, next) => {
 		activePage: "catalog",
 		course: { ...course, sections: sortedSections },
 		currentSort: sortBy
-	});
-});
-app.get("/demo", addDemoHeaders, (req, res) => {
-	res.render("demo", {
-		title: "Middleware Demo Page",
-		activePage: "demo"
 	});
 });
 
