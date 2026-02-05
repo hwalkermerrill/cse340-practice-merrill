@@ -21,6 +21,7 @@
         <a href="/catalog/<%= course.id %>?sort=room" class="<%= currentSort === 'room' ? 'active' : '' %>">Room</a>
       </div>
     </div>
+    <!-- <p>Displaying Sections sorted by <%= queryParams.sort || "time" %></p> -->
     <div class="section-list">
       <% course.sections.forEach(section => { %>
       <div class="section-card">

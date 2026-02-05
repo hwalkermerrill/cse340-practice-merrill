@@ -49,7 +49,7 @@ const courses = {
 };
 
 // Middleware (AKA Mise en Place)
-// Serve static files from the public directory
+// Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src/views"));
@@ -59,6 +59,60 @@ app.use((req, res, next) => {
 	res.locals.NODE_ENV = NODE_ENV.toLowerCase() || "production";
 	next();
 });
+app.use((req, res, next) => {
+	// Log all requests except those that start with /. (like /.well-known/)
+	if (!req.path.startsWith("/.")) {
+		console.log(`${req.method} ${req.url}`);
+	}
+	next();
+});
+app.use((req, res, next) => {
+	// Add date info to all templates
+	res.locals.currentDate = new Date();
+	next();
+});
+app.use((req, res, next) => {
+	// Add copyright year to all templates
+	res.locals.currentYear = res.locals.currentDate.getFullYear();
+	next();
+});
+app.use((req, res, next) => {
+	// Generate version number based on date
+	const cd = res.locals.currentDate;
+	const versionIteration = "v1.1.";
+	res.locals.versionNumber = `${versionIteration}${cd.getFullYear().toString().slice(2)}${(cd.getMonth() + 1).toString().padStart(2, "0")}`;
+	next();
+});
+app.use((req, res, next) => {
+	// Personalized greeting based on the time
+	const hour = res.locals.currentDate.getHours();
+	res.locals.greetingTime =
+		hour < 5 ? "Nande Okiteru No!? (Why Are You Awake!?)" :
+			hour < 12 ? "Ohayo Gozaimasu! (Good Morning)" :
+				hour < 18 ? "Konnichiwa! (Good Day)" :
+					"Konbanwa! (Good Evening)";
+	next();
+});
+app.use((req, res, next) => {
+	// Global middleware for random theme selection
+	const themes = ["blue-theme", "green-theme", "red-theme"];
+	const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+	res.locals.bodyClass = randomTheme;
+	next();
+});
+app.use((req, res, next) => {
+	// Share query parameters with all templates
+	res.locals.queryParams = req.query || {};
+	next();
+});
+
+// Route-Specific Middleware (Recette Mise en Place)
+const addDemoHeaders = (req, res, next) => {
+	// Sets custom headers for demo
+	res.setHeader("X-Demo-Page", "true");
+	res.setHeader("X-Middleware-Demo", "Ready to Serve");
+	next();
+};
 
 // Routes
 app.get("/", (req, res) => {
@@ -140,6 +194,12 @@ app.get("/catalog/:courseId", (req, res, next) => {
 		activePage: "catalog",
 		course: { ...course, sections: sortedSections },
 		currentSort: sortBy
+	});
+});
+app.get("/demo", addDemoHeaders, (req, res) => {
+	res.render("demo", {
+		title: "Middleware Demo Page",
+		activePage: "demo"
 	});
 });
 

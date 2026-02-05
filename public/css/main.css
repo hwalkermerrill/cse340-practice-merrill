@@ -61,6 +61,15 @@ body {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	background-position: center;
+	&.blue-theme {
+		background-color: #e3f2fd;
+	}
+	&.green-theme {
+		background-color: #e8f5e8;
+	}
+	&.red-theme {
+		background-color: #ffebee;
+	}
 }
 /* This makes ul/li's appear clickable */
 ul,
