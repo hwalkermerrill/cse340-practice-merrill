@@ -11,8 +11,8 @@ const router = Router();
 router.get("/", homePage);
 router.get("/about", aboutPage);
 router.get("/catalog", catalogPage);
-router.get("/catalog/:courseId", courseDetailPage);
 router.get("/catalog/random", randomCoursePage);
+router.get("/catalog/:courseId", courseDetailPage);
 router.get("/demo", addDemoHeaders, demoPage);
 
 // Development Only Routes
