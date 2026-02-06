@@ -136,6 +136,12 @@ img {
 		.slogan {
 			display: none;
 		}
+		.en-Greeting {
+			font-size: 0.6rem;
+			font-weight: normal;
+			opacity: 0.8;
+			margin-left: 0.25rem;
+		}
 		figure {
 			margin: 0.5rem;
 		}

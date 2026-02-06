@@ -2,252 +2,37 @@
 import express from "express";
 import { fileURLToPath } from "url";
 import path from "path";
+import routes from "./src/controllers/routes.js";
+import { addLocalVariables, devLogs } from "./src/middleware/global.js";
+import { error404Router, globalErrorHandler } from "./src/middleware/errorHandler.js";
 
 // Constants
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || "production";
+const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || "production";
 
-// Course Data (substitute for a database)
-const courses = {
-	"CS121": {
-		id: "CS121",
-		title: "Introduction to Programming",
-		description: "Learn programming fundamentals using JavaScript and basic web development concepts.",
-		credits: 3,
-		sections: [
-			{ time: "9:00 AM", room: "STC 392", professor: "Brother Jack" },
-			{ time: "2:00 PM", room: "STC 394", professor: "Sister Enkey" },
-			{ time: "11:00 AM", room: "STC 390", professor: "Brother Keers" }
-		]
-	},
-	"MATH110": {
-		id: "MATH110",
-		title: "College Algebra",
-		description: "Fundamental algebraic concepts including functions, graphing, and problem solving.",
-		credits: 4,
-		sections: [
-			{ time: "8:00 AM", room: "MC 301", professor: "Sister Anderson" },
-			{ time: "1:00 PM", room: "MC 305", professor: "Brother Miller" },
-			{ time: "3:00 PM", room: "MC 307", professor: "Brother Thompson" }
-		]
-	},
-	"ENG101": {
-		id: "ENG101",
-		title: "Academic Writing",
-		description: "Develop writing skills for academic and professional communication.",
-		credits: 3,
-		sections: [
-			{ time: "10:00 AM", room: "GEB 201", professor: "Sister Anderson" },
-			{ time: "12:00 PM", room: "GEB 205", professor: "Brother Davis" },
-			{ time: "4:00 PM", room: "GEB 203", professor: "Sister Enkey" }
-		]
-	}
-};
-
-// Middleware (AKA Mise en Place)
-// Serve static files
+// App Configuration
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "src/views"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.use((req, res, next) => {
-	// Make NODE_ENV available to all templates
-	res.locals.NODE_ENV = NODE_ENV.toLowerCase() || "production";
-	next();
-});
-app.use((req, res, next) => {
-	// Log all requests except those that start with /. (like /.well-known/)
-	if (!req.path.startsWith("/.")) {
-		console.log(`${req.method} ${req.url}`);
-	}
-	next();
-});
-app.use((req, res, next) => {
-	// Add date info to all templates
-	res.locals.currentDate = new Date();
-	next();
-});
-app.use((req, res, next) => {
-	// Add copyright year to all templates
-	res.locals.currentYear = res.locals.currentDate.getFullYear();
-	next();
-});
-app.use((req, res, next) => {
-	// Generate version number based on date
-	const cd = res.locals.currentDate;
-	const versionIteration = "v1.1.";
-	res.locals.versionNumber = `${versionIteration}${cd.getFullYear().toString().slice(2)}${(cd.getMonth() + 1).toString().padStart(2, "0")}`;
-	next();
-});
-app.use((req, res, next) => {
-	// Personalized greeting based on the time
-	const hour = res.locals.currentDate.getHours();
-	res.locals.greetingTime =
-		hour < 5 ? "Nande Okiteru No!? (Why Are You Awake!?)" :
-			hour < 12 ? "Ohayo Gozaimasu! (Good Morning)" :
-				hour < 18 ? "Konnichiwa! (Good Day)" :
-					"Konbanwa! (Good Evening)";
-	next();
-});
-app.use((req, res, next) => {
-	// Global middleware for random theme selection
-	const themes = ["blue-theme", "green-theme", "red-theme"];
-	const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-	res.locals.bodyClass = randomTheme;
-	next();
-});
-app.use((req, res, next) => {
-	// Share query parameters with all templates
-	res.locals.queryParams = req.query || {};
-	next();
-});
+// Middleware (AKA Mise en Place)
+app.use(addLocalVariables);
 
-// Route-Specific Middleware (Recette Mise en Place)
-const addDemoHeaders = (req, res, next) => {
-	// Sets custom headers for demo
-	res.setHeader("X-Demo-Page", "true");
-	res.setHeader("X-Middleware-Demo", "Ready to Serve");
-	next();
-};
+if (process.env.NODE_ENV === "development") {
+	app.use(devLogs);
+}
 
 // Routes
-app.get("/", (req, res) => {
-	res.render("home", {
-		title: "Welcome Home",
-		activePage: "home"
-	});
-});
-app.get("/about", (req, res) => {
-	res.render("about", {
-		title: "About Me",
-		activePage: "about"
-	});
-});
-app.get("/catalog", (req, res) => {
-	res.render("catalog", {
-		title: "Course Catalog",
-		activePage: "catalog",
-		courses: courses
-	});
-});
-app.get("/demo", addDemoHeaders, (req, res) => {
-	res.render("demo", {
-		title: "Middleware Demo Page",
-		activePage: "demo"
-	});
-});
+app.use("/", routes);
 
-app.get("/catalog/random", (req, res, next) => {
-	// Select a random course ID
-	const ids = Object.keys(courses);
-
-	// Validator
-	if (ids.length === 0) {
-		const err = new Error("No courses available");
-		err.status = 500;
-		return next(err);
-	}
-
-	let randomId = ids[Math.floor(Math.random() * ids.length)];
-	res.redirect(`/catalog/${randomId}`);
-});
-
-// Enhanced course detail route with sorting
-app.get("/catalog/:courseId", (req, res, next) => {
-	const courseId = req.params.courseId;
-	const validPattern = /^[A-Za-z]+[0-9]+$/;
-	const sortBy = req.query.sort || "time";
-	const course = courses[courseId];
-
-	// Validators
-	if (!validPattern.test(courseId)) {
-		const err = new Error(`Invalid course ID format: ${courseId}`);
-		err.status = 404;
-		return next(err);
-	} else if (!course) {
-		const err = new Error(`Course ${courseId} not found`);
-		err.status = 404;
-		return next(err);
-	}
-
-	let sortedSections = [...course.sections];
-
-	// Sort based on the parameter
-	switch (sortBy) {
-		case "professor":
-			sortedSections.sort((a, b) => a.professor.localeCompare(b.professor));
-			break;
-		case "room":
-			sortedSections.sort((a, b) => a.room.localeCompare(b.room));
-			break;
-		case "time":
-		default:
-			// Keep original time order as default
-			break;
-	}
-
-	console.log(`Viewing course: ${courseId}, sorted by: ${sortBy}`);
-
-	res.render("course-detail", {
-		title: `${course.id} - ${course.title}`,
-		activePage: "catalog",
-		course: { ...course, sections: sortedSections },
-		currentSort: sortBy
-	});
-});
-
-// Error Handling Middleware
-// Test route for 500 errors
-app.get("/test-error", (req, res, next) => {
-	const err = new Error("This is a test error");
-	err.status = 500;
-	next(err);
-});
-
-app.get("/test-unexerr", (req, res, next) => {
-	const err = new Error("This is an unexpected test error");
-	err.status = 418; // Potato error
-	next(err);
-});
-
-// Catch-all route for 404 errors
-app.use((req, res, next) => {
-	const err = new Error("Page Not Found");
-	err.status = 404;
-	next(err);
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-	// Prevent infinite loops, if a response has already been sent, do nothing
-	if (res.headersSent || res.finished) {
-		return next(err);
-	}
-
-	const status = err.status || 500;
-	let template = status === 404 ? "404" : status === 500 ? "500" : "error";
-
-	// Prepare data for the template
-	const context = {
-		title: status === 404 ? "Page Not Found" : status === 500 ? "Server Error" : "Unexpected Error",
-		error: NODE_ENV === "production" ? "An error occurred" : err.message,
-		stack: NODE_ENV === "production" ? null : err.stack,
-		NODE_ENV,
-		activePage: null
-	};
-
-	// Render the appropriate error template with fallback
-	try {
-		res.status(status).render(`errors/${template}`, context);
-	} catch (renderErr) { // eslint-disable-line no-unused-vars
-		if (!res.headersSent) {
-			res.status(status).send(`<h1>Error ${status}</h1><p>An error occurred.</p>`);
-		}
-	}
-});
+// Error Handling
+app.use(error404Router);
+app.use(globalErrorHandler);
 
 // When in development mode, start a WebSocket server for live reloading
 if (NODE_ENV.includes("dev")) {
