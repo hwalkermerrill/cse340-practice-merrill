@@ -2,6 +2,7 @@
 import { Router } from "express";
 import { addDemoHeaders } from "../middleware/demo/headers.js";
 import { catalogPage, courseDetailPage, randomCoursePage } from "./catalog/catalog.js";
+import { facultyListPage, facultyDetailPage } from "./faculty/faculty.js";
 import { homePage, aboutPage, demoPage, testErrorPage, testUnexpectedError, testNotLoggedInError, testForbiddenError } from "./index.js";
 
 // Constants
@@ -14,6 +15,8 @@ router.get("/catalog", catalogPage);
 router.get("/catalog/random", randomCoursePage);
 router.get("/catalog/:courseId", courseDetailPage);
 router.get("/demo", addDemoHeaders, demoPage);
+router.get("/faculty", facultyListPage);
+router.get("/faculty/:facultyId", facultyDetailPage);
 
 // Development Only Routes
 if (process.env.NODE_ENV === "development") {

@@ -1,0 +1,25 @@
+<!-- Source from ejs templates -->
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+<%- include("../partials/nav") %>
+
+<!-- MAIN CONTENT HERE -->
+<main>
+  <div class="faculty-header">
+    <h1><%= faculty.name %></h1>
+    <h3 class="faculty-title"><%= faculty.title %> &bull; <%= faculty.department %></h3>
+  </div>
+  <div class="faculty-details">
+    <div class="detail-section">
+      <h2>Contact Information</h2>
+      <div class="detail-item"><strong>Office:</strong> <%= faculty.office %></div>
+      <div class="detail-item"><strong>Phone:</strong> <%= faculty.phone %></div>
+      <div class="detail-item"><strong>Email:</strong> <a href="mailto:<%= faculty.email %>"><%= faculty.email %></a>
+      </div>
+    </div>
+    <div class="navigation">
+      <p><a href="/catalog">&larr; Back to Faculty Directory</a></p>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

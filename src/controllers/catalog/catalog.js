@@ -1,11 +1,11 @@
-//Imports
+// Imports
 import { getAllCourses, getCourseById, getSortedSections } from "../../models/catalog/catalog.js";
 
-//Routes
+// Routes
 const catalogPage = (req, res) => {
   const courses = getAllCourses();
 
-  res.render("catalog", {
+  res.render("catalog/catalog", {
     title: "Course Catalog",
     courses: courses
   });
@@ -35,7 +35,7 @@ const courseDetailPage = (req, res, next) => {
     console.log(`Viewing course: ${courseId}, sorted by: ${sortBy}`);
   }
 
-  res.render("course-detail", {
+  res.render("catalog/course-detail", {
     title: `${course.id} - ${course.title}`,
     course: { ...course, sections: sortedSections },
     currentSort: sortBy

@@ -1,0 +1,27 @@
+<!-- Source from ejs templates -->
+<%- include("../partials/head") %>
+<%- include("../partials/header") %>
+<%- include("../partials/nav") %>
+
+<!-- MAIN CONTENT HERE -->
+<main>
+  <h1>Faculty List</h1>
+  <p>Our faculty includes some of the best and most dedicated teachers around. To view their departments and how to
+    contact them, click on any faculty member below.</p>
+  <div class="faculty-sorting">
+    <span>Sort by: </span>
+    <a href="/faculty?sort=name" class="<%= currentSort === 'name' ? 'active' : '' %>">Name</a>
+    <a href="/faculty?sort=department" class="<%= currentSort === 'department' ? 'active' : '' %>">Department</a>
+    <a href="/faculty?sort=title" class="<%= currentSort === 'title' ? 'active' : '' %>">Title</a>
+  </div>
+  <div class="faculty-list">
+    <% faculty.forEach(person => { %>
+    <div class="faculty-card">
+      <h3><a href="/faculty/<%= person.id %>"><%= person.name %></a></h3>
+      <p class="faculty-title"><%= person.title %> &bull; <%= person.department %></p>
+    </div>
+    <% }); %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
