@@ -30,7 +30,7 @@ const facultyDetailPage = async (req, res, next) => {
     console.log(`Viewing faculty member: ${facultySlug}`);
   }
 
-  res.render("faculty/detail", {
+  res.render("faculty/faculty-detail", {
     title: facultyMember.name,
     faculty: facultyMember,
     facultySlug: facultySlug,
