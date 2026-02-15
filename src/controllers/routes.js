@@ -16,7 +16,7 @@ router.get("/catalog/random", randomCoursePage);
 router.get("/catalog/:slugId", courseDetailPage);
 router.get("/demo", addDemoHeaders, demoPage);
 router.get("/faculty", facultyListPage);
-router.get("/faculty/:facultyId", facultyDetailPage);
+router.get("/faculty/:facultySlug", facultyDetailPage);
 
 // Development Only Routes
 if (process.env.NODE_ENV === "development") {
