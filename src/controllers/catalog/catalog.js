@@ -1,6 +1,6 @@
 // Imports
-import { getAllCourses, getCourseById } from "../../models/catalog/catalog.js";
-import { getSectionsByCourseId } from "../../models/catalog/catalog.js";
+import { getAllCourses, getCourseBySlug } from "../../models/catalog/courses.js";
+import { getSectionsByCourseSlug } from "../../models/catalog/catalog.js";
 
 // Routes
 const catalogPage = async (req, res) => {
@@ -14,21 +14,21 @@ const catalogPage = async (req, res) => {
 
 const courseDetailPage = async (req, res, next) => {
   // Routes through course details
-  const courseId = req.params.courseId;
-  const course = await getCourseById(courseId);
+  const courseSlug = req.params.slugId;
+  const course = await getCourseBySlug(courseSlug);
 
   if (Object.keys(course).length === 0) {
-    const err = new Error(`Course ${courseId} not found`);
+    const err = new Error(`Course ${courseSlug} not found`);
     err.status = 404;
     return next(err);
   }
 
   const sortBy = req.query.sort || "time";
-  const sections = await getSectionsByCourseId(courseId, sortBy);
+  const sections = await getSectionsByCourseSlug(courseSlug, sortBy);
 
   //Development logging
   if (process.env.NODE_ENV === "development") {
-    console.log(`Viewing course: ${courseId}, sorted by: ${sortBy}`);
+    console.log(`Viewing course: ${courseSlug}, sorted by: ${sortBy}`);
   }
 
   res.render("course-detail", {
@@ -40,19 +40,19 @@ const courseDetailPage = async (req, res, next) => {
 };
 
 const randomCoursePage = async (req, res, next) => {
-  // Select a random course ID
+  // Select a random course Slug
   const courses = await getAllCourses();
-  const ids = courses.map(c => c.courseCode);
+  const slugs = courses.map(c => c.slug);
 
   // Validator
-  if (ids.length === 0) {
+  if (slugs.length === 0) {
     const err = new Error("No courses available");
     err.status = 500;
     return next(err);
   }
 
-  let randomId = ids[Math.floor(Math.random() * ids.length)];
-  res.redirect(`/catalog/${randomId}`);
+  let randomSlug = slugs[Math.floor(Math.random() * slugs.length)];
+  res.redirect(`/catalog/${randomSlug}`);
 };
 
 export { catalogPage, courseDetailPage, randomCoursePage };

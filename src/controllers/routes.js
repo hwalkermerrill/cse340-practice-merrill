@@ -13,7 +13,7 @@ router.get("/", homePage);
 router.get("/about", aboutPage);
 router.get("/catalog", catalogPage);
 router.get("/catalog/random", randomCoursePage);
-router.get("/catalog/:courseId", courseDetailPage);
+router.get("/catalog/:slugId", courseDetailPage);
 router.get("/demo", addDemoHeaders, demoPage);
 router.get("/faculty", facultyListPage);
 router.get("/faculty/:facultyId", facultyDetailPage);
