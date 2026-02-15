@@ -5,6 +5,7 @@ import path from "path";
 import routes from "./src/controllers/routes.js";
 import { addLocalVariables, devLogs } from "./src/middleware/global.js";
 import { error404Router, globalErrorHandler } from "./src/middleware/errorHandler.js";
+import { setupDatabase, testConnection } from "./src/models/setup.js";
 
 // Constants
 const app = express();
@@ -55,6 +56,8 @@ if (NODE_ENV.includes("dev")) {
 }
 
 // Start the server and listen on the specified port
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+	await setupDatabase();
+	await testConnection();
 	console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });

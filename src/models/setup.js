@@ -37,15 +37,9 @@ const setupDatabase = async () => {
 
 // Development Tests
 const testConnection = async () => {
-	if (process.env.NODE_ENV === "development") {
-		const result = await db.query("SELECT NOW() as current_time");
-		console.log("Database connection successful:", result.rows[0].current_time);
-		return true;
-	} else {
-		console.warn("Access Denied");
-		// TODO: Check if it must run. If not, reroute to error 403 page.
-		return false;
-	}
+	const result = await db.query("SELECT NOW() as current_time");
+	console.log("Database connection successful:", result.rows[0].current_time);
+	return true;
 }
 
 export { setupDatabase, testConnection };
