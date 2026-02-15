@@ -1,51 +1,48 @@
 // Imports
-import { getAllCourses, getCourseById, getSortedSections } from "../../models/catalog/catalog.js";
+import { getAllCourses, getCourseById } from "../../models/catalog/catalog.js";
+import { getSectionsByCourseId } from "../../models/catalog/catalog.js";
 
 // Routes
-const catalogPage = (req, res) => {
-  const courses = getAllCourses();
+const catalogPage = async (req, res) => {
+  const courses = await getAllCourses();
 
-  res.render("catalog/catalog", {
+  res.render("catalog", {
     title: "Course Catalog",
     courses: courses
   });
 };
 
-const courseDetailPage = (req, res, next) => {
+const courseDetailPage = async (req, res, next) => {
   // Routes through course details
   const courseId = req.params.courseId;
-  const course = getCourseById(courseId);
-  const validPattern = /^[A-Za-z]+[0-9]+$/;
-  const sortBy = req.query.sort || "time";
-  const sortedSections = getSortedSections(course.sections, sortBy);
+  const course = await getCourseById(courseId);
 
-  // Validators
-  if (!validPattern.test(courseId)) {
-    const err = new Error(`Invalid course ID format: ${courseId}`);
-    err.status = 404;
-    return next(err);
-  } else if (!course) {
+  if (Object.keys(course).length === 0) {
     const err = new Error(`Course ${courseId} not found`);
     err.status = 404;
     return next(err);
   }
+
+  const sortBy = req.query.sort || "time";
+  const sections = await getSectionsByCourseId(courseId, sortBy);
 
   //Development logging
   if (process.env.NODE_ENV === "development") {
     console.log(`Viewing course: ${courseId}, sorted by: ${sortBy}`);
   }
 
-  res.render("catalog/course-detail", {
-    title: `${course.id} - ${course.title}`,
-    course: { ...course, sections: sortedSections },
+  res.render("course-detail", {
+    title: `${course.courseCode} - ${course.name}`,
+    course: course,
+    sections: sections,
     currentSort: sortBy
   });
 };
 
-const randomCoursePage = (req, res, next) => {
+const randomCoursePage = async (req, res, next) => {
   // Select a random course ID
-  const courses = getAllCourses();
-  const ids = Object.keys(courses);
+  const courses = await getAllCourses();
+  const ids = courses.map(c => c.courseCode);
 
   // Validator
   if (ids.length === 0) {
