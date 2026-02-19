@@ -8,6 +8,13 @@ import { homePage, aboutPage, demoPage, testErrorPage, testUnexpectedError, test
 // Constants
 const router = Router();
 
+// Router-level Middleware
+router.use("/catalog", (req, res, next) => {
+  // Add catalog-specific styles to all catalog routes
+  res.addStyle("<link rel=\"stylesheet\" href=\"/css/catalog.css\">");
+  next();
+});
+
 // Routes
 router.get("/", homePage);
 router.get("/about", aboutPage);

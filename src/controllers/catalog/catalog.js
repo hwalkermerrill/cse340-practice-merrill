@@ -6,7 +6,7 @@ import { getSectionsByCourseSlug } from "../../models/catalog/catalog.js";
 const catalogPage = async (req, res) => {
   const courses = await getAllCourses();
 
-  res.render("catalog/catalog", {
+  res.render("catalog/list", {
     title: "Course Catalog",
     courses: courses
   });
@@ -31,7 +31,7 @@ const courseDetailPage = async (req, res, next) => {
     console.log(`Viewing course: ${courseSlug}, sorted by: ${sortBy}`);
   }
 
-  res.render("catalog/course-detail", {
+  res.render("catalog/detail", {
     title: `${course.courseCode} - ${course.name}`,
     course: course,
     sections: sections,

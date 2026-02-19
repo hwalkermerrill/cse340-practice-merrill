@@ -22,11 +22,11 @@
   <!-- Stylesheets -->
   <link rel="stylesheet" href="/css/normalize.css">
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/catalog.css">
-  <link rel="stylesheet" href="/css/faculty.css">
+  <%- renderStyles() %>
 
   <!-- Scripts -->
   <!-- <script src="/scripts/main.js"></script> -->
+  <%- renderScripts() %>
 
   <!-- DEV_ENV Live Reload WebSocket-->
   <% if (NODE_ENV.includes('dev')) { %>
