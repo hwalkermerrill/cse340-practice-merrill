@@ -5,24 +5,26 @@ import { catalogPage, courseDetailPage, randomCoursePage } from "./catalog/catal
 import { facultyListPage, facultyDetailPage } from "./faculty/faculty.js";
 import { homePage, aboutPage, demoPage, testErrorPage, testUnexpectedError, testNotLoggedInError, testForbiddenError } from "./index.js";
 import contactRoutes from "./forms/contact.js";
+import registrationRoutes from "./forms/registration.js";
 
 // Constants
 const router = Router();
 
 // Router-level Middleware
 router.use("/catalog", (req, res, next) => {
-  // Add catalog-specific styles to all catalog routes
   res.addStyle("<link rel=\"stylesheet\" href=\"/css/catalog.css\">");
   next();
 });
 router.use("/faculty", (req, res, next) => {
-  // ... and faculty routes
   res.addStyle("<link rel=\"stylesheet\" href=\"/css/faculty.css\">");
   next();
 });
 router.use("/contact", (req, res, next) => {
-  // ... and contact routes
   res.addStyle("<link rel=\"stylesheet\" href=\"/css/contact.css\">");
+  next();
+});
+router.use("/register", (req, res, next) => {
+  res.addStyle("<link rel=\"stylesheet\" href=\"/css/registration.css\">");
   next();
 });
 
@@ -38,6 +40,7 @@ router.get("/faculty/:facultySlug", facultyDetailPage);
 
 // Mounted Sub-Routers
 router.use("/contact", contactRoutes);
+router.use("/register", registrationRoutes);
 
 // Development Only Routes
 if (process.env.NODE_ENV === "development") {
