@@ -9,111 +9,102 @@ const router = Router();
 
 // Validation Middleware and Handler
 const registrationValidation = [
-  body("name")
-    .trim()
-    .isLength({ min: 2 })
-    .withMessage("Name must be at least 2 characters"),
-  body("email")
-    .trim()
-    .isEmail()
-    .normalizeEmail()
-    .withMessage("Must be a valid email address"),
-  body("emailConfirm")
-    .trim()
-    .custom((value, { req }) => value === req.body.email)
-    .withMessage("Email addresses must match"),
-  body("password")
-    .isLength({ min: 8 })
-    .matches(/[0-9]/)
-    .withMessage("Password must contain at least one number")
-    .matches(/[!@#$%^&*]/)
-    .withMessage("Password must contain at least one special character"),
-  body("passwordConfirm")
-    .custom((value, { req }) => value === req.body.password)
-    .withMessage("Passwords must match")
+	body("name")
+		.trim()
+		.isLength({ min: 2 })
+		.withMessage("Name must be at least 2 characters"),
+	body("email")
+		.trim()
+		.isEmail()
+		.normalizeEmail()
+		.withMessage("Must be a valid email address"),
+	body("emailConfirm")
+		.trim()
+		.normalizeEmail() //Added normalization to ensure consistent email format for comparison
+		.custom((value, { req }) => value === req.body.email)
+		.withMessage("Email addresses must match"),
+	body("password")
+		.isLength({ min: 8 })
+		.matches(/[0-9]/)
+		.withMessage("Password must contain at least one number")
+		.matches(/[!@#$%^&*]/)
+		.withMessage("Password must contain at least one special character"),
+	body("passwordConfirm")
+		.custom((value, { req }) => value === req.body.password)
+		.withMessage("Passwords must match")
 ];
 
-/**
- * Display the registration form page.
- */
+// Routes
 const showRegistrationForm = (req, res) => {
-  // TODO: Render the registration form view (forms/registration/form)
-  // TODO: Pass title: 'User Registration' in the data object
+	res.render("forms/registration/form", {
+		title: "User Registration"
+	});
 };
 
-/**
- * Handle user registration with validation and password hashing.
- */
+// Handle user registration with validation and password hashing.
 const processRegistration = async (req, res) => {
-  // Check for validation errors
-  const errors = validationResult(req);
+	// Check for validation errors
+	const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    // TODO: Log validation errors to console for debugging
-    // TODO: Redirect back to /register
-    return;
-  }
+	if (!errors.isEmpty()) {
+		// Log validation errors for developer debugging
+		console.error("Validation errors:", errors.array());
+		// Redirect back to form without saving
+		return res.redirect("/register");
+	}
 
-  // Extract validated data from request body
-  // TODO: Destructure name, email, password from req.body
+	// Extract validated data from request body
+	const { name, email, password } = req.body;
 
-  try {
-    // Check if email already exists in database
-    // TODO: Call emailExists(email) and store the result in a variable
+	try {
+		if (await emailExists(email)) {
+			// Check if email already exists in database
+			console.warn(`Email ${email} already exists`);
+			// Redirect back to form without saving
+			return res.redirect("/register");
+		}
 
-    if (/* TODO: check if email exists */) {
-      // TODO: Log message: 'Email already registered'
-      // TODO: Redirect back to /register
-      return;
-    }
+		// SECURITY NOTE: Hash the password before saving to database
+		const hashedPassword = await bcrypt.hash(password, 10);
+		await saveUser(name, email, hashedPassword);
+		console.log(`Successfully registered user: ${name} (${email})`);
 
-    // Hash the password before saving to database
-    // TODO: Use bcrypt.hash(password, 10) to hash the password
-    // TODO: Store the result in a variable called hashedPassword
+		// NOTE: Later when we add authentication, we'll change this to require login first
+		return res.redirect("/register/list");
 
-    // Save user to database with hashed password
-    // TODO: Call saveUser(name, email, hashedPassword)
-
-    // TODO: Log success message to console
-    // TODO: Redirect to /register/list to show successful registration
-    // NOTE: Later when we add authentication, we'll change this to require login first
-  } catch (error) {
-    // TODO: Log the error to console
-    // TODO: Redirect back to /register
-  }
+	} catch (error) {
+		console.error("Failed to register user:", error);
+		// Redirect back to form without saving
+		return res.redirect("/register");
+	}
 };
 
-/**
- * Display all registered users.
- */
+// Display all registered users.
 const showAllUsers = async (req, res) => {
-  // Initialize users as empty array
-  let users = [];
+	// Initialize users as empty array
+	let allUsers = [];
 
-  try {
-    // TODO: Call getAllUsers() and assign to users variable
-  } catch (error) {
-    // TODO: Log the error to console
-    // users remains empty array on error
-  }
+	try {
+		allUsers = await getAllUsers();
+	} catch (error) {
+		console.error("Error retrieving users:", error);
+		return res.render("forms/registration/list", {
+			title: "Registered Users",
+			users: []
+		});
+	}
 
-  // TODO: Render the users list view (forms/registration/list)
-  // TODO: Pass title: 'Registered Users' and the users variable in the data object
+	return res.render("forms/registration/list", {
+		title: "Registered Users",
+		users: allUsers
+	});
 };
 
-/**
- * GET /register - Display the registration form
- */
-router.get('/', showRegistrationForm);
+// GET routes
+router.get("/", showRegistrationForm);
+router.get("/list", showAllUsers);
 
-/**
- * POST /register - Handle registration form submission with validation
- */
-router.post('/', registrationValidation, processRegistration);
-
-/**
- * GET /register/list - Display all registered users
- */
-router.get('/list', showAllUsers);
+// POST routes
+router.post("/", registrationValidation, processRegistration);
 
 export default router;

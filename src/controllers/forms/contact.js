@@ -16,6 +16,7 @@ const showContactForm = (req, res) => {
 // Validation Middleware and Handler
 const handleContactSubmission = async (req, res) => {
   // Handle all submission logic
+
   // Validation first - if there are errors, log them and redirect back to form without saving
   const errors = validationResult(req);
 
