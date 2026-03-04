@@ -45,6 +45,8 @@ router.get("/demo", addDemoHeaders, demoPage);
 router.get("/faculty", facultyListPage);
 router.get("/faculty/:facultySlug", facultyDetailPage);
 router.get("/logout", processLogout);
+
+// Routes that requireLogin
 router.get("/dashboard", requireLogin, showDashboard);
 
 // Mounted Sub-Routers

@@ -1,8 +1,9 @@
-// Imports
+// Imports (Core-Middleware-Models)
 import { Router } from "express";
-import { body, validationResult } from "express-validator";
-import { emailExists, saveUser, getAllUsers } from "../../models/forms/registration.js";
 import bcrypt from "bcrypt";
+import { body, validationResult } from "express-validator";
+import { requireLogin } from "../../middleware/auth.js";
+import { emailExists, saveUser, getAllUsers } from "../../models/forms/registration.js";
 
 // Constants
 const router = Router();
@@ -69,7 +70,6 @@ const processRegistration = async (req, res) => {
 		await saveUser(name, email, hashedPassword);
 		console.log(`Successfully registered user: ${name} (${email})`);
 
-		// NOTE: Later when we add authentication, we'll change this to require login first
 		return res.redirect("/register/list");
 
 	} catch (error) {
@@ -102,7 +102,7 @@ const showAllUsers = async (req, res) => {
 
 // GET routes
 router.get("/", showRegistrationForm);
-router.get("/list", showAllUsers);
+router.get("/list", requireLogin, showAllUsers);
 
 // POST routes
 router.post("/", registrationValidation, processRegistration);

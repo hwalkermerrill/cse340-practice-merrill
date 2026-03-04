@@ -1,6 +1,7 @@
 // Imports
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
+import { requireLogin } from "../../middleware/auth.js";
 import { createContactForm, getAllContactForms } from "../../models/forms/contact.js";
 
 // Constants
@@ -60,7 +61,7 @@ const showContactResponses = async (req, res) => {
 
 // GET Routes
 router.get("/", showContactForm);
-router.get("/responses", showContactResponses);
+router.get("/responses", requireLogin, showContactResponses);
 
 // POST Routes
 router.post("/",
