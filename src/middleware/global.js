@@ -58,6 +58,12 @@ const addLocalVariables = (req, res, next) => {
   res.locals.versionNumber = `${versionIteration}${now.getFullYear().toString().slice(2)}${(now.getMonth() + 1).toString().padStart(2, "0")}`;
   res.locals.activePage = activePage;
 
+  // DO NOT REMOVE, NOT DUPLICATE: Used for conditional rendering
+  res.locals.isLoggedIn = false;
+  if (req.session && req.session.user) {
+    res.locals.isLoggedIn = true;
+  }
+
   setHeadAssetsFunctionality(res);
 
   next();

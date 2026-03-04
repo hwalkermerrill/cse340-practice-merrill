@@ -1,15 +1,15 @@
-// Imports (Core-Routes-Middleware-Models)
+// Imports (Core-Middleware-Routes-Models-Utils)
 import express from "express";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 import path from "path";
 import { fileURLToPath } from "url";
-import { startSessionCleanup } from "./src/utils/session-cleanup.js";
-import routes from "./src/controllers/routes.js";
 import { addLocalVariables, devLogs } from "./src/middleware/global.js";
 import { error404Router, globalErrorHandler } from "./src/middleware/errorHandler.js";
+import routes from "./src/controllers/routes.js";
 import { setupDatabase, testConnection } from "./src/models/setup.js";
 import { caCert } from "./src/models/db.js";
+import { startSessionCleanup } from "./src/utils/session-cleanup.js";
 
 // Constants
 const app = express();
