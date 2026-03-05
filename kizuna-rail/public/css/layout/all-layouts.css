@@ -1,9 +1,0 @@
-@layer all, header, main, footer;
-
-@import 'body.css' layer(all);
-
-@import 'header.css' layer(header);
-
-@import 'main.css' layer(main);
-
-@import 'footer.css' layer(footer);
