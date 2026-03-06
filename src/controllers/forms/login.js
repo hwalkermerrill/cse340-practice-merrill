@@ -32,8 +32,9 @@ const processLogin = async (req, res) => {
 
   if (!errors.isEmpty()) {
     // Log validation errors for developer debugging
-    console.error("Validation errors:", errors.array());
-    // Redirect back to form without saving
+    errors.array().forEach((error) => {
+      req.flash("error", error.msg);
+    });
     return res.redirect("/login");
   }
 
@@ -44,24 +45,26 @@ const processLogin = async (req, res) => {
     // TODO: Find user by email using findUserByEmail()
     const user = await findUserByEmail(email);
     if (!user) {
-      console.log("User not found");
+      req.flash("error", "Invalid Email or Password");
       return res.redirect("/login");
     }
 
     // TODO: Verify password using verifyPassword(password, user.password)
     const verified = await verifyPassword(password, user.password);
     if (!verified) {
-      console.log("Invalid password");
+      req.flash("error", "Invalid Email or Password");
       return res.redirect("/login");
     }
 
     // SECURITY: Remove password from user object before storing in session
     delete user.password;
     req.session.user = user;
+    req.flash("success", `Welcome, ${user.name}!`);
     return res.redirect("/dashboard");
 
   } catch (error) {
     console.error("Error during login process:", error);
+    req.flash("error", "An error occurred during login. Please try again later.");
     return res.redirect("/login");
   }
 };
