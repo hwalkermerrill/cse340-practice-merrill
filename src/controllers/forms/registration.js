@@ -228,15 +228,16 @@ const showAllUsers = async (req, res) => {
 		allUsers = await getAllUsers();
 	} catch (error) {
 		console.error("Error retrieving users:", error);
-		return res.render("forms/registration/list", {
-			title: "Registered Users",
-			users: []
-		});
+		// return res.render("forms/registration/list", {
+		// 	title: "Registered Users",
+		// 	users: []
+		// });
 	}
 
 	return res.render("forms/registration/list", {
 		title: "Registered Users",
-		users: allUsers
+		users: allUsers,
+		user: req.session && req.session.user ? req.session.user : null
 	});
 };
 
