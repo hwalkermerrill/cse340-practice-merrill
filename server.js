@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { addLocalVariables, devLogs } from "./src/middleware/global.js";
 import { error404Router, globalErrorHandler } from "./src/middleware/errorHandler.js";
+import flash from "./src/middleware/flash.js";
 import routes from "./src/controllers/routes.js";
 import { setupDatabase, testConnection } from "./src/models/setup.js";
 import { caCert } from "./src/models/db.js";
@@ -18,6 +19,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 3000;
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || "production";
+
+// App Configuration
+app.use(express.static(path.join(__dirname, "public")));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "src/views"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Session Configuration
 app.use(session({
@@ -43,19 +51,11 @@ app.use(session({
 		maxAge: 24 * 60 * 60 * 1000
 	}
 }));
-
-// Session Cleanup
 startSessionCleanup();
-
-// App Configuration
-app.use(express.static(path.join(__dirname, "public")));
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "src/views"));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
 // Middleware (AKA Mise en Place)
 app.use(addLocalVariables);
+app.use(flash);
 
 if (process.env.NODE_ENV === "development") {
 	app.use(devLogs);
