@@ -1,24 +1,16 @@
 // Imports
-import { Router } from "express";
-import { body, validationResult } from "express-validator";
-import { requireLogin } from "../../middleware/auth.js";
+import { validationResult } from "express-validator";
 import { createContactForm, getAllContactForms } from "../../models/forms/contact.js";
 
-// Constants
-const router = Router();
-
-// Routes
+// Controller Functions
 const showContactForm = (req, res) => {
 	res.render("forms/contact/form", {
 		title: "Contact Us"
 	});
 };
 
-// Validation Middleware and Handler
 const handleContactSubmission = async (req, res) => {
 	// Handle all submission logic
-
-	// Validation first - if there are errors, log them and redirect back to form without saving
 	const errors = validationResult(req);
 
 	if (!errors.isEmpty()) {
@@ -63,34 +55,4 @@ const showContactResponses = async (req, res) => {
 	});
 };
 
-// GET Routes
-router.get("/", showContactForm);
-router.get("/responses", requireLogin, showContactResponses);
-
-// POST Routes
-router.post("/",
-	[
-		body("subject")
-			.trim()
-			.isLength({ min: 2, max: 255 })
-			.withMessage("Subject must be at least 2 characters and no more than 255 characters")
-			.matches(/^[a-zA-Z0-9\s\-.,!?]+$/)
-			.withMessage("Subject contains invalid characters"),
-		body("message")
-			.trim()
-			.isLength({ min: 10, max: 2000 })
-			.withMessage("Message must be at least 10 characters and no more than 2000 characters")
-			.custom((value) => {
-				// Check for spam patterns (repetition)
-				const words = value.split(/\s+/);
-				const uniqueWords = new Set(words);
-				if (words.length > 20 && uniqueWords.size / words.length < 0.3) {
-					throw new Error("Message appears to be spam");
-				}
-				return true;
-			})
-	],
-	handleContactSubmission
-);
-
-export default router;
+export { showContactForm, handleContactSubmission, showContactResponses };

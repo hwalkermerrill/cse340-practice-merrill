@@ -1,37 +1,16 @@
 // Imports
-import { body, validationResult } from "express-validator";
+import { validationResult } from "express-validator";
 import { findUserByEmail, verifyPassword } from "../../models/forms/login.js";
-import { Router } from "express";
 
-// Constants
-const router = Router();
-
-const loginValidation = [
-  body("email")
-    .trim()
-    .isEmail()
-    .withMessage("Please provide a valid email address")
-    .isLength({ max: 255 })
-    .withMessage("Email address is too long")
-    .normalizeEmail(),
-  body("password")
-    .trim()
-    .isLength({ min: 8 })
-    .withMessage("Password must be at least 8 characters")
-    .isLength({ max: 128 })
-    .withMessage("Password must be less than 129 characters")
-];
-
-// Routes
+// Controller Functions
 const showLoginForm = (req, res) => {
   res.render("forms/login/form", {
     title: "User Login"
   });
 };
 
-// Validation Middleware and Handlers
 const processLogin = async (req, res) => {
-  // Check for validation errors
+  // Handle Login form submission
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -46,14 +25,12 @@ const processLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // TODO: Find user by email using findUserByEmail()
     const user = await findUserByEmail(email);
     if (!user) {
       req.flash("error", "Invalid Email or Password");
       return res.redirect("/login");
     }
 
-    // TODO: Verify password using verifyPassword(password, user.password)
     const verified = await verifyPassword(password, user.password);
     if (!verified) {
       req.flash("error", "Invalid Email or Password");
@@ -118,11 +95,4 @@ const showDashboard = (req, res) => {
   });
 };
 
-// GET Routes
-router.get("/", showLoginForm);
-
-// POST Routes
-router.post("/", loginValidation, processLogin);
-
-export default router;
-export { processLogout, showDashboard };
+export { processLogin, processLogout, showLoginForm, showDashboard };

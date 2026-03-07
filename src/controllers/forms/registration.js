@@ -1,69 +1,9 @@
 // Imports (Core-Middleware-Models)
-import { Router } from "express";
 import bcrypt from "bcrypt";
-import { body, validationResult } from "express-validator";
-import { requireLogin } from "../../middleware/auth.js";
+import { validationResult } from "express-validator";
 import { emailExists, saveUser, getAllUsers, getUserById, updateUser, deleteUser } from "../../models/forms/registration.js";
 
-// Constants
-const router = Router();
-
-// Validation Middleware and Handlers
-const registrationValidation = [
-	body("name")
-		.trim()
-		.isLength({ min: 2, max: 100 })
-		.withMessage("Name must be at least 2 characters and no more than 100 characters")
-		.matches(/^[a-zA-Z\s'-]+$/)
-		.withMessage("Name can only contain letters, spaces, hyphens, and apostrophes'"),
-	body("email")
-		.trim()
-		.isEmail()
-		.normalizeEmail()
-		.withMessage("Must be a valid email address")
-		.isLength({ max: 255 })
-		.withMessage("Email address is too long"),
-	body("emailConfirm")
-		.trim()
-		.normalizeEmail()
-		.custom((value, { req }) => value === req.body.email)
-		.withMessage("Email addresses must match"),
-	body("password")
-		.trim()
-		.isLength({ min: 8 })
-		.withMessage("Password must be at least 8 characters")
-		.isLength({ max: 128 })
-		.withMessage("Password must be less than 129 characters")
-		.matches(/[0-9]/)
-		.withMessage("Password must contain at least one number")
-		.matches(/[a-z]/)
-		.withMessage("Password must contain at least one lowercase letter")
-		.matches(/[A-Z]/)
-		.withMessage("Password must contain at least one uppercase letter")
-		.matches(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/) // eslint-disable-line no-useless-escape
-		.withMessage("Password must contain at least one special character"),
-	body("passwordConfirm")
-		.trim()
-		.custom((value, { req }) => value === req.body.password)
-		.withMessage("Passwords must match")
-];
-
-const editValidation = [
-	body("name")
-		.trim()
-		.isLength({ min: 2, max: 100 })
-		.withMessage("Name must be between 2 and 100 characters")
-		.matches(/^[a-zA-Z\s'-]+$/)
-		.withMessage("Name can only contain letters, spaces, hyphens, and apostrophes"),
-	body("email")
-		.trim()
-		.isEmail()
-		.normalizeEmail()
-		.withMessage("Must be a valid email address")
-		.isLength({ max: 255 })
-		.withMessage("Email address is too long")
-];
-
+// Controller Functions
 const showEditAccountForm = async (req, res) => {
 	// Allow editing of existing accounts
 	const targetUserId = parseInt(req.params.id);
@@ -241,14 +181,4 @@ const showAllUsers = async (req, res) => {
 	});
 };
 
-// GET routes
-router.get("/", showRegistrationForm);
-router.get("/list", requireLogin, showAllUsers);
-router.get("/:id/edit", requireLogin, showEditAccountForm);
-
-// POST routes
-router.post("/", registrationValidation, processRegistration);
-router.post("/:id/edit", requireLogin, editValidation, processEditAccount);
-router.post("/:id/delete", requireLogin, processDeleteAccount);
-
-export default router;
+export { showRegistrationForm, processRegistration, showAllUsers, showEditAccountForm, processEditAccount, processDeleteAccount };
