@@ -27,6 +27,9 @@ app.set("views", path.join(__dirname, "src/views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// test database connection on startup
+console.log("DB_URL at runtime:", process.env.DB_URL);
+
 // Session Configuration
 app.use(session({
 	store: new PgSession({
